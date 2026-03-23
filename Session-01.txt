@@ -1,0 +1,98 @@
+https://reprint.forrester.com/reports/the-forrester-wavetm-multicloud-container-platforms-q3-2025-f3367e46/index.html
+https://github.com/cprakash2118/RHACM-DO432-23-March-2026
+
+
+######Point-01-#
+
+Base:-
+Technology:- Multicloud Container Platforms 
+Product:- Red Hat OpenShift 
+
+Add-Ons:-
+Technology:- Multi CLuster Management
+Add-Ons:- Red Hat Advance Cluster Management (RHACM).
+
+1-) Cloud services editions
+ - Red Hat OpenShift Service on AWS     [ROSA; Platforms=AWS;POC=AWS]
+ - Microsoft Azure Red Hat OpenShift    [ARO; Platforms=Azure;POC=MS-Azure]
+ - Red Hat OpenShift Dedicated          [Dedicated ; Platforms=AWS/GCP;POC=Red Hat]
+ - Red Hat OpenShift on IBM Cloud       [IBM; Platforms=IBMCLoud; POC=IBM]
+FYI- Based on core(CPU)
+
+2-) Self-managed editions
+ - Red Hat OpenShift Kubernetes Engine      [Basic; RHOKE]
+ - Red Hat OpenShift Container Platform     [Standard; RHOCP]
+ - Red Hat OpenShift Platform Plus          [Add-Ons; RHOPP]
+ - Red Hat OpenShift Virtualization Engine  [Add-Ons; RHOVE]
+FYI-Based on socket (1,2)
+
+3-) Services & add-ons
+ - Red Hat OpenShift AI
+ - Red Hat OpenShift Lightspeed
+ - Red Hat OpenShift Virtualization
+ - Red Hat Quay
+ - Red Hat Advanced Cluster Management for Kubernetes
+ - Red Hat Advanced Cluster Security for Kubernetes
+ - Red Hat Advanced Developer Suite
+ - Red Hat OpenShift Consulting
+ 
+#####Point-02-# 
+Classroom Environment (You consider - Design multi cluster deployment).
+1-) User details.
+2-) Network/Doamin. 
+3-) VMs/Servers.
+4-) Multi cluster details.
+
+1-) Users details.
+    - Login to VMs/Servers.
+	  student/student (sudo access)
+	  root/redhat 
+	  
+	- Login to OCP cluster.
+	  admin/redhatocp        [cluster-admin access]
+	  developer/developer    [member access]
+	  FYI- Both are LDAP account.
+	  https://idm.ocp4.example.com (admin/redhatocp)
+
+    - kubeadmin/kubeadmin-password 
+	- kubeconfig 	
+	
+	- API URL - https://api.ocp4.example.com:6443 
+	          - https://api.clusterName.baseDomain:6443 
+	
+	- Web URL - https://console-openshift-console.apps.ocp4.example.com
+	            https://appName-nsName.apps.clusterName.baseDomain
+	
+******************************************
+- OpenShift-installer 
+- PullSecret 
+- RHCOS image 
+- OpenShift-Client (oc)
+
+LB-Haproxy 
+DNS
+DHCP
+PXE
+NFS-server (If no plan for ODF/Non-ODF - Initial)
+Apache 
+NAT (COnnected/DIsconnected env).
+******************************************
+
+-2-) Network/Doamin details:-
+   Network Name                      Domain Name                   IP Range 
+   student Network                   lab.example.com              172.25.250.0/24 
+   classroom Network                 example.com                  172.25.254.0/24
+   Cluster1 Network                  ocp4.example.com             192.168.50.0/24 
+   Cluster1 Network                  ocp4-mng.example.com         192.168.51.0/24 
+   External Netwrok                   Network ofr internet 
+   
+-3-) VMs/Servers details:-
+   classroom.example.com            [ALlow internet to this LAB]
+   workstation.lab.example.com      [JUmp server]
+   bastion.lab.example.com          [It connect classroom to student network]
+   utility.lab.example.com          [DNS,DHCP,LB-Haproxy,PXE,Apache,NFS-server etc]
+   registry.ocp4.example.com        [image registry]
+   idm.ocp4.example.com             [LDAP server]
+   master01.ocp4.example.com        [1st cluster]
+   master02.ocp4-mng.example.com    [2nd cluster]
+   
