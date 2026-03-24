@@ -1,0 +1,53 @@
+Quick Recap:-
+POint-01-# Product [RHOCP;RHOCPP <- Add-ons RHACM]
+FYI- RHACM can be only deployed on Red Hat Based cluster.
+
+POint-02-# Classroom Environment 
+ - workstation.lab.example.com     [jump server]
+ - utility.lab.example.com         [DNS,HAproxy,PXE,DHCP,Apache,NFS-server]
+ - idm.ocp4.example.com            [LDAP server - RBAC]
+   FYI
+   - https://idm.ocp4.example.com   [admin/redhatocp]
+   - Single LDAP w.r.t all cluster.
+ - registry.ocp4.example.com        [registry server]
+ - master01.ocp4.example.com        [1st cluster - ocp4]
+ - master02.ocp4-mng.example.com    [2nd cluster - ocp4-mng]
+
+ Note:- 
+   - oc login -u admin -p redhatocp https://api.ocp4.example.com:6443 
+   - oc status 
+
+   - oc login -u admin -p redhatocp https://api.ocp4-mng.example.com:6443
+   - oc status    
+
+-------------------------------------------------------------
+ACM - 2,500
+Single cluster (3 master) - 2k worker nodes (4.10 OCP)
+
+point-01-#  Why RHACM exist (Problem statement).
+1-# One console for many clusters.
+  - Instead of logging in to 10/50/200 cluster seperaetly, RHACM gives a single control plane view.
+     ROSA (5)
+	 ARO  (6)
+	 IBM  (3)
+	 OVE  (5)
+	 OCP  (10)
+	 RHOAI (5)
+  
+  
+2-# Works accross hybrid environments - You can manage cluster across:-
+   - Multiple DCs (on-prem)
+   - private cloud 
+   - public cloud 
+   - edge sites 
+   FYI- ALl certified k8s distribution (based on CNCF guidelines).
+3-# End-to-end "Day-2" operations.
+   - Upgrades 
+   - Compliance enforcement 
+   - Application placement accros cluster 
+   - Monitoring health of clusters + workload 
+
+4-# Cloud-Native approach.
+   - RHACM rans as Kubernetes components (Operators/controllers) and interects with cluster via kubernetes API.
+   
+point-02-# Core components and Architecture of ACM (Hub/Local <-> Managed cluster).
