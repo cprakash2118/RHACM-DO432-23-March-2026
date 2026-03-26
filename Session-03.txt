@@ -1,0 +1,99 @@
+
+point-01-#  Why RHACM exist (Problem statement).
+1-# One console for many clusters.
+  - Instead of logging in to 10/50/200 cluster seperaetly, RHACM gives a single control plane view.
+     ROSA (5)
+	 ARO  (6)
+	 IBM  (3)
+	 OVE  (5)
+	 OCP  (10)
+	 RHOAI (5)
+	 MKE   (5)
+	 RKE   (3)
+	 RKE2  (3)
+  
+  
+2-# Works accross hybrid environments - You can manage cluster across:-
+   - Multiple DCs (on-prem)
+   - private cloud 
+   - public cloud 
+   - edge sites 
+   FYI- ALl certified k8s distribution (based on CNCF guidelines).
+3-# End-to-end "Day-2" operations.
+   - Upgrades 
+   - Compliance enforcement 
+   - Application placement accros cluster 
+   - Monitoring health of clusters + workload 
+
+4-# Cloud-Native approach.
+   - RHACM rans as Kubernetes components (Operators/controllers) and interects with cluster via kubernetes API.
+   
+cluster-01 (kubeadmin; -> htpasswd -IdP - Groups - sre_grp; devops_grp; myapp_grp; user1-5->sre_grp)
+cluster-02 (kubeadmin; -> htpasswd -IdP - Groups - sre_grp; devops_grp; myapp_grp; user1-5->sre_grp)
+
+point-02-# Core components and Architecture of ACM (Hub/Local <-> Managed cluster).
+- Login to both the clusters (ocp4 & ocp4-mng)
+- oc loogin -u admin -p redhatocp https://api.ocp4.example.com:6443 
+- oc whoami --show-console 
+  https://console-openshift-console.apps.ocp4.example.com 
+- Install RHACM operator 
+- MuliclusterHub resource created
+- Login to ACM cluster dashboard [local/All Cluster]
+- import clusters one by one. 
+- Initiated for "ocp4-mng" - copy commands 
+- Login to other cluster (ocp4-mng)
+- oc loogin -u admin -p redhatocp https://api.ocp4-mng.example.com:6443
+- Paste the generated commands 
+- Automatically ocp4-mng cluster imported/registered with Hub/Local cluster.
+
+
+2.1-) HUB Cluster (Control center)
+ - API:-
+   RHACM exposes APIs for automation/integation (script,CI/CD/ etc).
+   Example:-
+    Cluster Operator - invoke the k8s API to manage K8s resources. 
+	
+ - Console:-
+   Main UII, with key built-ins:-
+   - Search (find resources across all clusters - registered cluster).
+   - Topology (relationship view:- app->deployment->pod->services->route)
+   - Obervability (Metrics/alerts dashboard when enabled).
+
+ - CLI:- Admin interface which help to connect with clustes.
+         oc, PolicyGenetator, helm, virtctl (kubeVirt based cluster-native virtulization).
+
+ - MulticlusterHub resource.
+   a) Hub/local cluster uses a key custom resource called "MuliclusterHub" to install, upgrade, and manage RHACM components.
+   b) RHACM hub components run in "open-cluster-management" namespace.
+  
+ - Async work model
+   - HUB doesn't ssh into other cluster.
+   - It send desired state/work request and receives status back.
+   - Scales better when you manage many cluster.
+   
+ - Local cluster concepts:-
+   - Local-cluster is the openshift cluster where RHACM hub is installed.
+   - RHACM treats it also as a managed cluster.
+
+
+point-03-# Managed Cluster (worker/target):-
+Managed cluster is any Openshift/kubernetes cluster that is registered to the HUB cluster.
+
+3.1-) Klusterlet (agent).
+  - Klusterlet is a key agent.
+  - It controls the secure connection between managed cluster and HUB.
+  - It receives "work" from HUB and applies it locally (policy/app/placement related task).
+
+3.2-) Search components:-
+  - COllects cluster resources metadata so the HUB can do global search.
+
+3.3-) Application components:-
+  - Enable application placement and multi-cluster app lifecycle action.
+
+3.4-) POlicy components:-
+  - Enable governance lifecycle (compliance checking + enforcement)
+
+3.5-) Obervability (OPtional/Enablement).
+   - Sends health/metrics to HUB's obervability stack when enabled.
+   
+
