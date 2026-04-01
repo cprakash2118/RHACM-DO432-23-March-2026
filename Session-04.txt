@@ -1,0 +1,92 @@
+POint-4-#
+- Major four capabilities w.r.t RHACM.
+  4.1-) Cluster lifecycle [Create/import/manage/upgrade/delete]
+        1-) What it means ?
+		 - Full lifecycle operations for cluster across diffent infra.
+		
+		2-) Who provide it.
+		 - Multicluster engine for Kubernetes opeartor (Installed automatically with RHACM).
+		 
+		3-) What you do from the HUB console?
+		 - Aggregate health of all the cluster (registered with ACM).
+		 - Drill into health metrics per cluster.
+		 - Upgrdae cluster individually or in bulk.
+		 - Delete cluster (that were cleared by HUB).
+		 - Hibernate/resume/detach cluster.
+		 
+	Example:-
+	  12 OpenShift Cluster:-
+	   - 2 in AWS (ROSA)   - ClusterSet=rosa-apac
+	   - 2 in Azure (ARO)  - ClusterSet=aro-apac 
+	   - 4 on-prem         - ClusterSet=blr-dc
+	   - 4 edge            - ClusterSet=edge-cloud 
+	   
+	   From HUB console.
+	   - Detach, upgrade, manage all cluster 
+	   
+	   As per DO432 labs -
+	   -  ocp4 (HUB)
+	   - ocp4-mng (Managed)
+	   - HUB cluster also considered as managed cluster.
+	   
+	   By Default - it belongs to "default" & "global" clusterSet
+	   NOte:- All registered cluster belongs to "global" all the time.
+	   
+	4.2-) Application lifecycle management (Deploy/maintain application across all clusters).
+	  1-# What it means?
+	    - Deploy the same application across multiple cluster with consistent configuration.
+		- Manage upgrade/rollouts consistently.
+		
+	  2-# HOw RHACM does it (Backend flow).
+	    - Uses Kubernetes specs + Placement rules (Where an application should go).
+		- Integrates strongly with "OpenShift GitOps (ArgoCD)" 
+		  NOte:- OpenShift gitops operator once installed -> ArgoCD instance (customize it).
+		- Can be integrated with APP (app/KubeVirt automation).
+		  FYI- Deploy APP controller operator on OCP cluster (kubevirt-cluster).
+		
+		Example:- 
+		- Run a "Cluster Portal" app:-
+		  - Dev Cluster (Bangalore)
+		  - Staging cluster (Mumbai)
+		  - Pro cluster (2 clusters - active-active).
+		  
+		- Gitops pushes (push/pull) the app:-
+		  - Dev get every commit
+		  - Staging get tagged releases 
+		  - Prod get only approved releases.
+		  
+		- RHACM ensure placement.
+		  - Prod app must run only on cluster labled "env=prod" & "region=india"
+	 
+	 
+	 4.3-) GOvernance Policies (Policy + Compliance)
+           - What it means ?
+		     - Define policies that:-
+			   - Inform - When something is wrong (audit).
+			   - Enforce - Disired state (prevent drift).
+			   
+			  Example: 
+			  Policy - all cluster must have "app-prod" & "app-stage"
+			  Compliance - inform/enforce 
+			  
+			 - Policy framework:-
+			   - RHACM povides a policy framwork to:-
+                 -> Create policies centrally
+                 -> Apply to selected cluster.
+                 -> Track compliance status.
+    
+            - Dynmic policy templates:-
+              
+     4.4-) Observability (Complete monitoring).
+	  - Observability Stack tools:-
+	    - Thanos 
+		- Prometheus 
+		- Altermanage 
+		- Grafana Dashboard
+
+=======================
+RHACM:-
+- CLuster Management [Import/Create and Management]
+- Policy Management  [imp; Policies via Dashboard & PolicyGenerator]
+- Application Management [ArgoCD - pull/push]
+- Observability 	 
