@@ -1,0 +1,130 @@
+Chapter 1. Installing Red Hat Advanced Cluster Management for Kubernetes
+- The Kubernetes Multicluster and Hybrid Cloud Architecture Landscape
+- Architecture of Red Hat Advanced Cluster Management for Kubernetes
+- Installing Red Hat Advanced Cluster Management for Kubernetes
+
+
+Chapter 2. Managing Clusters by Using Red Hat Advanced Cluster Management for Kubernetes
+- Cluster Lifecycle Management by Using the RHACM Web Console
+- Navigating the RHACM Web Console
+- Configuring Access Control for Multicluster Management
+- Troubleshooting Common Import Issues for Managed Clusters
+
+==============
+Example:-
+
+POint-01-# Required information:-
+
+BaseDomain: citi.com 
+Cluster Name: cluster-blr, cluster-mum, cluster-del
+cluster-blr (HUB/Local)
+
+API URL:- https://api.cluster-blr.citi.com:6443 
+Web URL:- https://console-openshift-console.apps.cluster-blr.citi.com 
+
+API URL:- https://api.cluster-mum.citi.com:6443 
+Web URL:- https://console-openshift-console.apps.cluster-mum.citi.com
+
+API URL:- https://api.cluster-del.citi.com:6443 
+Web URL:- https://console-openshift-console.apps.cluster-del.citi.com 
+
+
+POint-02-#
+Installing RHACM operator to selected cluster (clustter-blr).
+- Login to cluster-blr web console (as cluster-admin).
+  $ oc login -u admin -p redhatocp https://api.cluster-blr.citi.com:6443 
+  $ oc whoami --show-console 
+  https://console-openshift-console.apps.cluster-blr.citi.com 
+
+ANY OCP cluster cluster build:-
+- install-config.yaml 
+   - baseDomain
+   - clusterName 
+   - replicas
+   - worker count 
+   - PullSecret 
+   - ssh-keygen 
+   - Network-Type 
+   
+- openshift-install
+    
+- oc (OpenShift-Client)
+
+- PullSecret (Download all required images from quay.io while installing OCP cluster).
+  Subcription part (right credential)
+- RHEL coreOS images 
+  Selecting coreOS images (Wrong pick cause "Container Run Time" environment. 
+
+ RHOCPv418  k8sv1.31
+ RHOCPv419  k8sv1.32
+ RHOCPv420  k8sv1.33
+ RHOCPv421  k8sv1.34
+
+
+- Deploy RHACM on one of the OCP cluster.
+  1-) Operator installation (Install controller logic).
+  2-) "MulticlusterHub" creation -> Deploy actual RHACM service.
+
+****************** Installation Prerequisites & sizing *********************
+1-# Platform Requirement:-
+  - OpenShift Cluster (recommended).
+  - Kubernetes is supported, but openshift gives:-
+    - Integrated OperatorHub
+	- Oauth 
+	- Observability 
+	- Lifecycle automation.
+  - FYI
+    - Why OpenShift is recommended?
+      RHACM heavily depends on OpenShift operator, APIs etc.
+
+2-# Browser requirment [Chrome/Safari/Edge]
+
+3-# Network Connectivity.
+    RHACM requires bi-directional connectivity between:-
+     - HUB cluster 
+     - Managed cluster 
+
+ 	FOr what ?
+    - Agent registration 
+    - Policy Enforcement
+    - Metrics collection 
+    - Workload Orchestration 
+
+    Alone with this if you have disconnected cluster:-
+    - Images must exist in local registries (Offline quay.io)
+    - OperatorHub must be mirrored (Using offline quay.io).
+
+4-# Sizing factor - [ Consider this point like "What actually consumes resources?"]
+    RHACM resources usage depends on:-
+    1-# Number Of cluster [Each cluster run agents]
+    2-# Number of polciies [Each policy = reconcillation loops]
+    3-# Account Acount [Drives placement & Monitoring]
+    4-# Storage Speed [Imaacts Observability part]
+    5-# Network Latency [AAffect agent sync process]
+
+  RHACM is control-Plane.
+  
+  
+  FYI- Once RHACM deployment then application running on multiple namespace (open-cluster-management).
+  
+4-# Why dedicated namespace matters?
+   RBAC isolation 
+   Easier cleanup 
+   Security Audits etc 
+
+5-# Update approval - Manual (As per Prod env).
+    - Generally RHACM upgrade may cause like -> Changes policy CRDs, Affect governance, restart controller.
+
+ Once RHACM operator installed.
+- Operator pods started 
+- CRDs are registered 
+- Controllers are loaded 
+  etc.
+
+
+Why MulticlusterHub is Mandatory (Core part)?
+
+  
+	
+     
+  
