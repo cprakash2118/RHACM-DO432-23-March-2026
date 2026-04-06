@@ -1,0 +1,83 @@
+Unit-1-# Installing Red Hat Advanced Cluster Management for Kubernetes.
+- The Kubernetes Multicluster and Hybrid Cloud Architecture Landscape 
+- Architecture of Red Hat Advanced Cluster Management for Kubernetes
+- Installing Red Hat Advanced Cluster Management for Kubernetes 
+
+## BaseDoamin- Example.com 
+ - Cluster-01 -> ocp4
+   - API URL - https://api.ocp4.example.com:6443 
+   - Web COnsole - https://console-openshift-console.apps.ocp4.example.com
+
+ - cluster-02 -> ocp4-mng 
+   - API URL - https://api.ocp4-mng.example.com:6443 
+   - Web COnsole - https://console-openshift-console.apps.ocp4-mng.example.com
+
+
+Deployed RHACM on Cluster-01 -> ocp4 This cluster become a HUB/Local cluster.
+Hub Cluster:-
+Managed Cluster:-
+
+
+Unit-2-# Managing Clusters by Using Red Hat Advanced Cluster Management for Kubernetes.
+- Cluster Lifecycle Management by Using the RHACM Web Console
+- Navigating the RHACM Web Console 
+- Configuring Access Control for Multicluster Management.
+- Troubleshooting Common Import Issues for Managed Clusters
+
+Point-01-# CLuster lifecycle Management -> RHACM 
+1- ACM provides one console to manage the full "Lifecycle of CLuster Management".
+  1-) Create (Provision) new cluster (Public Cloud/ vSphere / OpenStack / On-pream / Virtulization.
+  2-) Import an already-running cluster into RHACM so that ACM can manage it.
+  3-) Manage day-2 ops like:-
+      - labels, cluster sets access control (RBAC)
+	  - UPgrade (to new cluster version)
+	  - Scaling (Change the worker count w.r.t individual/bulk cluster)
+	  - automation hooks (pre/post action).
+  4-)Detach / Remove cluster cleanly when cluster no longer want RHACM control.
+  
+   RHACM is the "Manager" ; Actual provisioning is performed by "operator" 
+   - multiCLuster engine + Hive.
+
+2- Roles of RHACM components:-
+ a) RHACM HUB cluster:-
+    - This is OpenShift cluster where RHACM deployed.
+	- COntrol Plane for Multi-cluster Management
+  
+ b) MultipleCluster engine Operator (MCE).
+    - Provide the "cluster lifecycle" framework that RHACM uses.
+	- RHACM UI triggers action, MCE orchestrates.
+	
+ c) Hive Operator (Provisioing engine).
+    - Hive is a provisioning controller for most supported providers
+	- When you "Create cluster" in RHACM, Hive create the real cloud resources and install OCP cluster on that infra.
+	
+ d) Assisted installer (For some on-prem flow).
+    - For on-prem provisioning patterns, the flow differ from cloud.
+	- RHACM use platfrom integration + Assisted installer capabilities instead of "only HIve".
+	
+3-) Cluster types supported:-
+Cluster lifecycle supports all providers that are certified through the Cloud Native Computing Foundation (CNCF)Kubernetes Conformance Program.
+- https://www.cncf.io/training/certification/software-conformance/ 
+
+FYI- ALl Certified Kubernetes distribution as per CNCF guidelines are supported by RHACM.
+
+4-) Infrastructure menu in RHACM console.
+- Clusters 
+  - Create new cluster (provisioning)
+  - Import existing cluster (attach)
+  - VIew health, distribution and details.
+
+- Automation 
+  Create Ansible template.
+  Attach prehook and posthook jobs.
+   FYI- Example:- Run a "pre-create validation" job or "post-create hardening" job.
+
+- Host INventory 
+  Discover physical/VIrtual host for on-prem installs
+  Helps when you want RHACM-driven on-prem cluster rollout (host-based workflows).
+
+- Virtual Machine 
+  Central VMview/management across cluster (Relevent when OVE/OCP-with-OVE).
+  Useful in mixed env where cluster also run VMs alonside containers.
+  
+
