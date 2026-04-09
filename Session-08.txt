@@ -1,0 +1,121 @@
+# Quick recap (5 mins).
+1-) INstalled RHACM on one of the cluster (Become HUB cluster).
+2-) Import the existing cluster (as of now all are Red Hat OpenShift cluster only).
+
+As per LAB - DO432 
+
+baseDomain - example.com 
+clusters:-
+ocp4
+ocp4-mng
+
+Cluster-01:- (HUB/local cluster) -> RHACM deployed here.
+API URL - https://api.ocp4.example.com:6443 
+Web URL - https://console-openshift-console.apps.ocp4.example.com 
+
+Cluster-02:-
+API URL - https://api.ocp4-mng.example.com:6443 
+Web URL - https://console-openshift-console.apps.ocp4-mng.example.com 
+
+
+ClusterSet -> application(ocp4) & kubevirt (ocp4-mng)
+
+Access on ClusterSet -> application (ocp4)
+- admin - Full access to perform ACM ops [Cluster/POlicy/Application/Observability lifecycle mgmt] 
+- view  - Read access (Specific to Monitoring agent)
+- bind  - ONly access assignment part (w.r.t ACM).
+
+
+DO380/DO316 [backup,Auth,MachineConfig,Logging,Monitoring,ArgoCD deployment acess multiple cluster]
+Unit-3-> Policy 
+Unit-4-> Observability STack deployment.
+Unit-5-> Application (ArgoCD)
+Unit-6-> OpenShift Virtulization (KubeVirt) 
+
+------------
+Ex:-
+1- Installation of ACM 
+2- Import all cluster (3)
+3- Implememt access based on situation (admin,view).
+
+#####################
+Troubleshooting Common Import Issues for Managed Clusters:-
+- Multi cluster setup:
+  OCP cluster as a HUB cluster.
+  Other multiple cluster [On-prem,AWS-ROSA,ARO,Metal Metal, MKE, RKE2 etc]
+  
+- RHACM should mmanage all cluster from one place.
+- When we have access "ACM console" to import cluster then what happaned?
+  - Cluster not reachable 
+  - Status: Unknown 
+  - Import issues like Stack/pending etc 
+  
+POint-01-# 
+RHACM does not just "connect" cluster like ssh.
+
+Instead it:-
+- Install agent 
+- Establishes secure trust 
+- Maintains continuous heartbeat (Refer even NTP also - chronyd)
+
+2016 + 1 secoud  - 2017 
+MachineCOnfig Change to all nodes 
+
+
+1-) RHACM is agent-based + Certificate-Based + lease-based management:-
+- Network must be perfect 
+- Certificates must be trusted 
+- Time must be synchronized
+- Agent must continuously report.
+
+NOte: If any one fails -> Cluster status breaks.
+
+2-) RHACM cluster lifecycle (High-Level flow):-
+- HUB cluster runs "Import COntroller"
+- Import secret is generated on HUB
+- Managed cluster installs "klusterlet"
+- Managed cluster registers with HUB.
+- Managed cluster joins 
+- Managed cluster sends heartbeat (lease)
+- RHACM shows Ready/Available.
+
+
+
+I create/imported a cluster, but it never shows up properly. Why like this ?
+- Network connectivity issue (Most common issue)
+  RHACM requires bi-directional connectivity.
+   
+   From        to           port 
+   HUB       Managed        6443 
+   Managed   HUB            6443 
+   Both      Both           443 
+   
+   NOte: DNS must resolve API endpoints 
+   What goes wrong ?
+   - Firewall bloack 6443 
+   - Private DNS mismatch (zone records)
+   
+   curl -k https://api.ocp4.example.com:6443/readyz
+   curl -k https://api.ocp4-mng.example.com:6443/readyz   
+   
+   
+- Certificate Trust issue:-
+  My cluster API is reachable. But still import fails ... why ? 
+  Reachability not equal to Trust.
+  
+  RHACM use mTLS (Mutual TLS)
+  
+  Problem might be because of many issue (just mentioned few here).
+  - You might used custom CA (not proper)
+  - HUB does not trust Managed cluster CA.
+  
+  $ openssl s_client -connect api.ocp4-mng.example.com:6443 
+  
+  Note:- If ccert chain is untrusted -> registration fails silently.
+  
+  FYI- RHACM is strict about certificate -> No trust = No management.
+======================================
+To be discuss (Continue on Monday session).
+- Time must be synchronized
+- Agent must continuously report.
+   

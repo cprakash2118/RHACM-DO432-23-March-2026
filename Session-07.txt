@@ -1,0 +1,88 @@
+POint-01-#
+ - UNdertand the internal architecture.
+ - Installed the RHACM on one of the OCP cluster (k8s cluster also).
+
+POint-02-# 
+ - Import the cluster (Generate the command and execute the same on managed cluster as "cluster-admin" only.
+ 
+ Cluster Count -> c1 to c10 (It means - all below clusters are registered with ACM). 
+    CLusters                  clusterSet
+ - c1 -> RHACM (HUBcluster)- managed-local
+ - c2-c5 -> Created (rosa) - managed-rosa 
+ - c6 -> MKE               - managed-mke 
+ - c7 -> RKE               - managed-rke 
+ - c8-10 -> bare metal(OVE)- managed-dc-ove
+ 
+ ClusterSet -> Grouping of your cluster (One cluster can not be part of multiple clusterSet).
+ 
+ LDAP Server:-
+ https://idm.ocp4.example.com 
+ admin/redhatocp 
+ 
+ ClusterSet:-
+ application-clusterset -> local cluster 
+ kubevirt-clusterset    -> managed-cluster 
+ 
+ 
+ Access clusterSet like "application-clusterset".
+ role:-
+ open-cluster-management:managedclusterset:admin:<clusterSet>
+ open-cluster-management:managedclusterset:view:<clusterSet>
+ open-cluster-management:managedclusterset:bind:<clusterSet>
+ 
+ oc adm policy add-cluster-role-group <role> gorup_name
+ 
+ 
+ oc adm policy add-cluster-role-to-group \ open-cluster-management:managedclusterset:admin:production production-administrators
+ 
+ 
+ oc adm policy add-cluster-role-to-user \ open-cluster-management:managedclusterset:admin:application-clusterset user1
+====================================================
+####################################################
+---------
+POint-01-# Cluster Details:-
+
+CLuster-01 -> ocp4 (https://api.ocp4.example.com:6443)
+CLuster-02 -> ocp4-mng (https://api.ocp4-mng.example.com:6443)
+
+CLuster-01 -> Deploy microservice applications - Containerized workload.
+CLuster-02 -> Deploy Applications which required Virtual Machine - Virtulized workload.
+
+To managed this operations -> Create "clusterSet" 
+What is ClusterSet ?
+Grouping of multiple cluster belongs to clusterSet - managed by ACM.  
+one cluster can be part of one clusterSet only.
+
+----------
+POint-02-# ClusterSet Details:-
+CLuster-01 - local-cluster (HUB cluster ; Where we have deployed ACM).
+CLuster-02 - managed-cluster (registered name with RHACM)
+
+application-clusterset -> local-cluster
+kubevirt-clusterset    -> managed-cluster
+
+
+----------
+POint-03-#
+Users        Groups     Access (w.r.t RHACM)
+user1-3 -> app-admins  (admin) -> CLuster control on cluster (as per ClusterSet)
+user4-6 -> app-bind    (bind)  -> Provides access (binding access) to namespace w.r.t clusterSet only.
+user7-9 -> app-mon     (view)  -> Provides read access to users w.r.t clusterSet  
+user10 --------------> (admin)
+user11 --------------> (bind)
+user12 --------------> (view)
+
+Rule    - Action 
+Role    - Set of Action 
+Binding - Assign role to group/user call role binding [Cluster/Local]
+
+role w.r.t ACM:-
+open-cluster-management:managedclusterset:role:clusterSetName 
+Example (role):-
+open-cluster-management:managedclusterset:admin:application-clusterset
+Assign to Group/user 
+
+- Validation part:-
+user1-3 -> Admin w.r.t clusterSet="application-clusterset" -> local-cluster
+
+- "namespace-binding" -> Which allow to do policy/applications deployment.
