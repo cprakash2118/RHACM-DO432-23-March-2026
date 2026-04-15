@@ -1,0 +1,124 @@
+Unit-1-# Deploying and Managing Policies for Multiple Clusters with Red Hat Advanced Cluster Management for Kubernetes.
+
+RHACM:-
+1- Cluster Lifecycle management.
+2- Governance Policy 
+3- Application Management 
+4- Observability 
+
+### Unit -3:-
+
+POint-01:- Governance Policy
+
+OpenShift cluster (Not just single cluster).
+- Development cluster 
+- Testing cluster 
+- Prod cluster 
+- complaince cluster like PCI 
+- cloud and on-prem cluster 
+
+Problem statement:-
+- Each cluster configured differently 
+- Some cluster miss required namespace
+- Some clusters miss security settings 
+- Certificate expire without warning 
+- Operators are installed in some cluster but not other.
+
+So governance is needed to contole and standardize cluster.
+
+What is Governance here?
+Governance means w.r.t RHACM is defining rules, checking those rules continuosly, reporting violation and optionally finxing then automatically.
+
+RHACM Governance allow to perform:-
+- Define rules once 
+- APply them to many/specific cluster 
+- MOnitor compliance centrally 
+- Enforce rules automatically if needed.
+
+Create policy once on HUB cluster -> Apply to many/specific cluster -> Monitor complaince -> fixed automatically if needed.
+
+-------------
+POint-02:- Keu object w.r.t Governance Policy  
+
+- What are basic objects used in RHACM governance?
+- Three mandatory objects:-
+   1- Policy 
+   2- Placement
+   3- PlacementBinding
+   
+   Policy -> WHAT rule 
+   Placement -> WHERE to apply 
+   PlacementBinding -> CONNECT both 
+   
+What is POlicy exactly?
+Policy define the rule.
+Example:-
+  - Namespace "ns-prod-payment-app" must exist.
+    
+	Consider round 78-80 microservices deployed to cluster-01 
+	- ns-prod-payment-app
+	- ns-prod-booking-app
+	- ns-prod-noti-app 
+	- ns-prod-avl-app 
+	
+	
+	Consider round 78-80 microservices deployed to cluster-02
+	- ns-non-prod-payment-app
+	- ns-non-prod-booking-app
+	- ns-non-prod-noti-app 
+	- ns-non-prod-avl-app 
+	
+  - Certificateshould not expire within 300  hours.
+  
+  - OPerator must be installed.
+    OADP, OpenShift Logging, OpenShift Monitoring, OpenShift gitops, etc 
+
+  - Some pods must follow the security rules.
+
+
+IMP:-
+- Policy does not know which cluster.
+- Policy only defines what to check or enfore.
+
+
+
+What is Placement?
+Placement defines which cluster should get the policy.
+Placement can use cluster labels, environment tags etc.
+
+Policy = rule 
+Placement = Target Cluster 
+
+
+
+What is PlacementBinding?
+PlacementBinding allow to connect both (Think like a glue).
+ Policy + Placement 
+
+FYI-
+Without PlacementBinding
+- Policy exists
+- Placement exists
+- But nothing happens.
+
+Complete lifecycle of Governance Policy.
+- Admin creates a policy on HUB cluster.
+- Admin creates placement 
+- Admin create PlacementBinding
+- HUB replicate policy to selected cluster (managed clusters)
+- Violation & events are generated 
+- Compliance status is sent back to HUB cluster.
+- Dashboard shows compliant or Noncompliant.
+- If remediation is enfore, RHACM fixes it automatically.
+
+FYI- Compliance always flows from managed cluster back to HUB cluster.
+
+
+
+
+
+ 
+ 
+
+
+  

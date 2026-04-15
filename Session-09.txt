@@ -1,0 +1,68 @@
+https://github.com/cprakash2118/RHACM-DO432-23-March-2026
+- Time must be synchronized
+- Agent must continuously report.
+
+Quick Recap (5mins):-
+- Multiple clusters.
+  - RHACM already installed via OperatorHUB
+  - ocp4.example.com - HUB/Local cluster 
+  - ocp4-mng.example.com - Managed cluster (Import cluster part)
+  
+3-)  Time synchronization issue.
+    NTP - Now this is managed by chronyd 
+  
+    service-node [DNS/DHCP/HAproxy/TimeSync]
+    Bootstrap node -> master nodes -> worker nodes 
+    Disconnected setup -> NTP server (PM/VM)
+  
+    chronyd ; date (timedatectl)
+  
+
+------------
+Managed cluster cannot pull RHACM images (registry auth).
+ - Pods on managed stuck in "ImagePullBackOff, ErrImagePull" etc 
+ - Agent never start 
+ 
+ Root cause:-
+  Missing/incorrect pull secret for Red Hat registry.
+  
+  Solution:-
+   - Ensure the managed cluster has access to required registries and it should have valid pull secret.
+   - W.r.t disconnected setup - Ensure mirror registry must be correct and synced with main before update.
+   
+#################################################################################
+Unit-1-# INstallation of ACM (INstall via OperatorHUB - on selected env).
+         $ oc login -u admin -p redhatocp https://api.cluster-01.domainX.example.com:6443 
+		 $ oc whoami --show-console 
+		 https://console-openshift-console.cluster-01.domainX.example.com
+		 
+Unit-2-# Import clusters 
+       c2 -> belongs to application clusterSet
+       c3 -> belongs to virtu clusterSet 
+
+     Note: 
+	 - "global" clusterSet (all cluster part of this)
+     - default clusterSet (If you have not mentioned any clusterSet to newly resgiter cluster - it will be part of default)
+	 - ONce all cluster registered with ACM.
+	 
+     - Create clusterSet.
+	    - application
+		- virtu
+
+Unit-3-# RBAC.
+         users - given 
+		 group - given 
+		 
+		 Access/role:-
+		 admin 
+		 view 
+		 
+		 admin access to c2 (clusterSet=application).
+		 VIew access to c3  (clutserSet=virt)
+		 
+#######################################################################
+ClusterSet w.r.t GE/LAB as per DO432 
+Policy -> 
+Application -> global (constrol will be w.r.t label).
+
+ 
