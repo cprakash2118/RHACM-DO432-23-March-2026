@@ -1,0 +1,79 @@
+#Policy Generator:-
+What is Policy Generator?
+
+Example:-1
+ Deploy application:-
+ - Deployment -> ReplicaSet -> POD 
+ - Service (Expose service) -> route 
+ - Secret/ConfigMap 
+ 
+ Database Deployment:-
+ - StatefulSet -> POD 
+ - service (headless)
+ - Route 
+ - Secret/ConfigMap 
+ - PDB etc 
+ 
+ ALl are kubernetes/OCP resources - express these resources into YAML (resource manifest).
+ $ oc explain statefulset |less
+ $ oc explain statefulset.spec |less
+ $ oc explain statefulset.spec.xyz |less
+ 
+ apiVersion: v1
+ kind: Pod 
+ metadata:
+   name: POdName 
+   namespace: demo01 
+   labels:
+     app: POdName
+ spec:
+------------------
+Example:-2
+
+Install operator (OADP Operator).
+- namespace
+- OperatorGroup (oc get og -n openshift-adp)
+- Subscription (oc get sub -n openshift-adp)
+- CRs 
+- ConfigMap 
+- Secret
+- ClusterRoleBinding 
+- Configuration (using configMap + manifest.yaml)
+
+NOW RHACM needs a policy object so that it can push and govern those resources across all the managed cluster (as per clusterSet).
+
+Problem statement:- Instead of manually writing large RHACM policy YAMLs, you will write just:-
+- PolicyGenerator file.
+- One or more normal manifest (Example1,2)
+ 
+Use the utility - "PolicyGenerator" to convert all manifest into RHACM policy objects.
+
+Normal Manifest -> PolicyGenerator -> RHACM Policy -> Placement/Binding -> Managed Clusters.
+
+#### Core structure of PolicyGenerator.
+Below blocks are mandatory:-
+- policyDefaults 
+- policies 
+
+- policySets is optional 
+
+* Policies defines the policy name and the manifest files or Directory to includes.
+
+
+apiVersion:
+kind: PolicyGenerator
+metadata: 
+  name: example-policy 
+
+policyDefaults:
+  namespace: policies
+  severity: medium 
+  remediationAction: inform 
+  complianceType: musthave 
+  
+policies:
+ - name: some-policy 
+   manifests:
+    - path: 01-manifest-deployment.yaml 
+	- path: 02-manifest-secret.yaml 
+	
